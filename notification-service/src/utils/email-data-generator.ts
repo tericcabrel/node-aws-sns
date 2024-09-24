@@ -14,6 +14,7 @@ export type OrderSummary = {
   vat: number;
   vatAmount: number;
   userName: string;
+  subTotal: number;
 };
 
 export const generateOrderSummary = (order: Order, user: User): OrderSummary => {
@@ -23,14 +24,15 @@ export const generateOrderSummary = (order: Order, user: User): OrderSummary => 
     price: item.unitPrice,
   }));
 
-  const total = order.items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
-  const vatAmount = Math.round(total * (order.vatRate / 100) * 100) / 100;
+  const subTotal = order.items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+  const vatAmount = Math.round(subTotal * (order.vatRate / 100) * 100) / 100;
 
   return {
     orderId: order._id,
     orderDate: order.createdAt,
     reference: order.reference,
-    total,
+    total: subTotal + vatAmount,
+    subTotal,
     items,
     vat: order.vatRate,
     vatAmount,
